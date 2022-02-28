@@ -27,5 +27,9 @@ func keybindings(g *gocui.Gui) error {
 		return err
 	}
 
+	if err := g.SetKeybinding(viewServicesId, gocui.KeyEnter, gocui.ModNone, showServiceDetails); err != nil {
+		return err
+	}
+
 	return nil
 }

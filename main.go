@@ -7,8 +7,9 @@ import (
 )
 
 var (
-	viewClusterId  = "clusterView"
-	viewServicesId = "servicesView"
+	viewClusterId       = "clusterView"
+	viewServicesId      = "servicesListView"
+	viewServiceDetailId = "servicesDetailView"
 
 	_clustersData = []*ClusterData{}
 )
