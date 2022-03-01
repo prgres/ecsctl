@@ -77,12 +77,12 @@ func layoutServiceDetail(g *gocui.Gui, service *service.ServiceData) error {
 func layoutServices(ctx *context.Context, g *gocui.Gui) error {
 	cluster := ctx.ActiveCluster
 
-	if !ctx.IsServiceFetched {
+	if !cluster.IsServiceFetched {
 		if err := cluster.FetchServices(); err != nil {
 			return err
 		}
 
-		ctx.IsServiceFetched = true
+		cluster.IsServiceFetched = true
 	}
 
 	v, err := g.View(viewServicesId)

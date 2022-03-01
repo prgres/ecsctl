@@ -7,8 +7,9 @@ import (
 )
 
 type ClusterData struct {
-	Name     string
-	Services []*service.ServiceData
+	Name             string
+	Services         []*service.ServiceData
+	IsServiceFetched bool
 }
 
 var (
