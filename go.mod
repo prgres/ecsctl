@@ -7,7 +7,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.14.0
 	github.com/aws/aws-sdk-go-v2/service/ecs v1.17.0
 	github.com/jroimartin/gocui v0.5.0
-	github.com/u2takey/go-utils v0.0.0-20210821132353-e90f7c6bacb5
 )
 
 require (
@@ -20,7 +19,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sso v1.10.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.15.0 // indirect
 	github.com/aws/smithy-go v1.11.0 // indirect
-	github.com/go-logr/logr v0.1.0 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/nsf/termbox-go v1.1.1 // indirect

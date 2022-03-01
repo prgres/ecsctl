@@ -4,13 +4,15 @@ import (
 	"log"
 
 	"github.com/jroimartin/gocui"
+	"github.com/prgres/ecsctl/context"
 )
 
 var (
-	viewClusterId  = "clusterView"
-	viewServicesId = "servicesView"
+	viewClusterId       = "clusterView"
+	viewServicesId      = "servicesListView"
+	viewServiceDetailId = "servicesDetailView"
 
-	_clustersData = []*ClusterData{}
+	_ctx *context.Context
 )
 
 func main() {
@@ -23,7 +25,12 @@ func main() {
 	g.Cursor = true
 	g.Mouse = true
 
-	g.SetManagerFunc(managerFunc)
+	_ctx, err = context.New()
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	g.SetManagerFunc(routes)
 
 	if err := keybindings(g); err != nil {
 		log.Panicln(err)
@@ -34,10 +41,22 @@ func main() {
 	}
 }
 
-func managerFunc(g *gocui.Gui) error {
-	if len(g.Views()) == 0 {
-		return layoutClusters(g)
+func routes(g *gocui.Gui) error {
+	ctx := _ctx.Context()
+
+	if g.CurrentView() == nil {
+		return layoutClusters(ctx, g)
 	}
 
-	return nil
+	switch g.CurrentView().Name() {
+
+	case viewClusterId:
+		return layoutClusters(ctx, g)
+
+	case viewServicesId:
+		return layoutServices(ctx, g)
+
+	default:
+		return nil
+	}
 }

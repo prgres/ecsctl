@@ -1,62 +1,14 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/jroimartin/gocui"
-	"github.com/prgres/ecsctl/cmd"
+	"github.com/prgres/ecsctl/cluster"
+	"github.com/prgres/ecsctl/context"
 )
 
-type ClusterData struct {
-	Name     string
-	Services []*ServiceData
-}
-
-func (c *ClusterData) GetServices() ([]*ServiceData, error) {
-	if len(c.Services) == 0 {
-		services, err := cmd.GetServices(c.Name)
-		if err != nil {
-			return nil, err
-		}
-
-		for _, s := range services {
-			c.Services = append(c.Services, &ServiceData{
-				Name: cmd.GetNameFromResourceId(s),
-				Arn:  s,
-			})
-		}
-	}
-
-	return c.Services, nil
-}
-
-func GetClusters(clustersData []*ClusterData) ([]*ClusterData, error) {
-	//TODO: background refresh
-	if len(clustersData) == 0 {
-		clusters, err := cmd.GetClustersNames()
-		if err != nil {
-			return nil, err
-		}
-
-		for _, c := range clusters {
-			clustersData = append(clustersData, &ClusterData{
-				Name: c,
-			})
-		}
-	}
-
-	return clustersData, nil
-}
-
-func layoutClustersInit(g *gocui.Gui) error {
-	clusters, err := GetClusters(_clustersData)
-	if err != nil {
-		return err
-	}
-
-	_clustersData = clusters
-
+func layoutClustersInit(g *gocui.Gui, clustersData []*cluster.ClusterData) error {
 	maxX, maxY := g.Size()
 	v, err := g.SetView(viewClusterId, maxX/4, maxY/4, 3*maxX/4, 3*maxY/4)
 	if err != nil {
@@ -71,7 +23,7 @@ func layoutClustersInit(g *gocui.Gui) error {
 	v.SelBgColor = gocui.ColorGreen
 	v.SelFgColor = gocui.ColorBlack
 
-	for _, c := range clusters {
+	for _, c := range clustersData {
 		fmt.Fprintln(v, c.Name)
 	}
 
@@ -82,11 +34,11 @@ func layoutClustersInit(g *gocui.Gui) error {
 	return nil
 }
 
-func layoutClusters(g *gocui.Gui) error {
+func layoutClusters(ctx *context.Context, g *gocui.Gui) error {
 	v, err := g.View(viewClusterId)
 	if err != nil {
 		if err == gocui.ErrUnknownView {
-			return layoutClustersInit(g)
+			return layoutClustersInit(g, ctx.ClustersData)
 		}
 
 		return err
@@ -103,39 +55,36 @@ var prevLineMouseClick = ""
 
 func showServicesLayoutMouse(g *gocui.Gui, v *gocui.View) error {
 	_, cy := v.Cursor()
-	l, err := v.Line(cy)
+	clusterId, err := v.Line(cy)
 	if err != nil {
-		l = ""
+		clusterId = ""
 	}
 
-	if prevLineMouseClick == l {
+	if prevLineMouseClick == clusterId {
 		return showServicesLayout(g, v)
 	}
 
 	if prevLineMouseClick == "" {
-		prevLineMouseClick = l
+		prevLineMouseClick = clusterId
 	}
 
 	return nil
 }
 
 func showServicesLayout(g *gocui.Gui, v *gocui.View) error {
+	ctx := _ctx.Context()
+
 	_, cy := v.Cursor()
-	l, err := v.Line(cy)
+	clusterId, err := v.Line(cy)
 	if err != nil {
-		l = ""
+		return nil // most likely 'clusterId == "" '
 	}
 
-	if l == "" {
-		return nil
+	ctx.SetActiveClusterId(clusterId)
+
+	if err := layoutServices(ctx, g); err != nil {
+		return err
 	}
 
-	for _, c := range _clustersData {
-		if l == c.Name {
-			g.DeleteView(v.Name())
-			return layoutServices(g, c)
-		}
-	}
-
-	return errors.New("cluster: " + l + " not found")
+	return g.DeleteView(v.Name())
 }
