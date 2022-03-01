@@ -56,8 +56,35 @@ func GetNameFromResourceId(resourceId string) string {
 
 func DescribeServices(cluster string, services []string) ([]*types.Service, error) {
 	result := make([]*types.Service, len(services))
-	ctx := context.TODO()
+	globIndex := 0
+	chunkSize := 10
 
+	if len(services) < 10 {
+		chunkSize = len(services)
+	}
+
+	for i := 0; i < len(services); i += chunkSize {
+		end := i + chunkSize
+		if end > len(services) {
+			end = len(services)
+		}
+
+		output, err := describeService(cluster, services[i:end])
+		if err != nil {
+			return nil, err
+		}
+
+		for j := range output {
+			result[globIndex] = &output[j]
+			globIndex++
+		}
+	}
+
+	return result, nil
+}
+
+func describeService(cluster string, services []string) ([]types.Service, error) {
+	ctx := context.TODO()
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
 		return nil, err
@@ -65,55 +92,14 @@ func DescribeServices(cluster string, services []string) ([]*types.Service, erro
 
 	svc := ecs.NewFromConfig(cfg)
 
-	if len(services) < 10 {
-		tmp := ecs.DescribeServicesInput{
-			Cluster:  &cluster,
-			Services: services,
-		}
+	output, err := svc.DescribeServices(ctx, &ecs.DescribeServicesInput{
+		Cluster:  &cluster,
+		Services: services,
+	})
 
-		output, err := svc.DescribeServices(ctx, &tmp)
-		if err != nil {
-			return nil, err
-		}
-
-		for i := range output.Services {
-			result[i] = &output.Services[i]
-		}
-
-		return result, nil
+	if err != nil {
+		return nil, err
 	}
 
-	chunks := len(services) / 10
-	if len(services)%10 != 0 {
-		chunks++
-	}
-
-	globIndex := 0
-	for i := 0; i < chunks; i++ {
-		//TODO refactor
-		rangeStart := i * 10
-		rangeEnd := ((1 + i) * 10)
-		var chu []string
-		if i+1 < chunks {
-			chu = services[rangeStart:rangeEnd]
-		} else {
-			chu = services[rangeStart:]
-		}
-
-		tmp := ecs.DescribeServicesInput{
-			Cluster:  &cluster,
-			Services: chu,
-		}
-		output, err := svc.DescribeServices(ctx, &tmp)
-		if err != nil {
-			return nil, err
-		}
-
-		for i := range output.Services {
-			result[globIndex] = &output.Services[i]
-			globIndex++
-		}
-	}
-
-	return result, nil
+	return output.Services, nil
 }
