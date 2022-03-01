@@ -1,20 +1,16 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/jroimartin/gocui"
+
+	"github.com/prgres/ecsctl/context"
+	"github.com/prgres/ecsctl/service"
 )
 
-type ServiceData struct {
-	Name string
-	Arn  string
-
-	*types.Service
-}
-
-func layoutServicesList(g *gocui.Gui, cluster *ClusterData) error {
+func layoutServicesList(g *gocui.Gui, services []*service.ServiceData) error {
 	maxX, maxY := g.Size()
 	v, err := g.SetView(viewServicesId, 1, 1, maxX/3-1, maxY-1)
 	if err != nil {
@@ -28,9 +24,9 @@ func layoutServicesList(g *gocui.Gui, cluster *ClusterData) error {
 	v.SelFgColor = gocui.ColorBlack
 	v.Autoscroll = true
 	v.Frame = true
-	v.Title = cluster.Name
+	// v.Title = cluster.Name
 
-	for _, s := range cluster.Services {
+	for _, s := range services {
 		fmt.Fprintln(v, s.Name)
 	}
 
@@ -41,7 +37,7 @@ func layoutServicesList(g *gocui.Gui, cluster *ClusterData) error {
 	return nil
 }
 
-func layoutServiceDetail(g *gocui.Gui, service *ServiceData) error {
+func layoutServiceDetail(g *gocui.Gui, service *service.ServiceData) error {
 	maxX, maxY := g.Size()
 
 	oldV, err := g.View(viewServiceDetailId)
@@ -50,6 +46,7 @@ func layoutServiceDetail(g *gocui.Gui, service *ServiceData) error {
 			return err
 		}
 	}
+
 	if oldV != nil {
 		if err := g.DeleteView(viewServiceDetailId); err != nil {
 			return err
@@ -77,26 +74,21 @@ func layoutServiceDetail(g *gocui.Gui, service *ServiceData) error {
 	return nil
 }
 
-var clusterP *ClusterData
+func layoutServices(ctx *context.Context, g *gocui.Gui) error {
+	cluster := ctx.ActiveCluster
 
-func layoutServicesInit(g *gocui.Gui, cluster *ClusterData, service *ServiceData) error {
-	clusterP = cluster
-	if err := layoutServicesList(g, cluster); err != nil {
-		return err
-	}
+	if !ctx.IsServiceFetched {
+		if err := cluster.FetchServices(); err != nil {
+			return err
+		}
 
-	return nil
-}
-
-func layoutServices(g *gocui.Gui, cluster *ClusterData) error {
-	if err := cluster.FetchServices(); err != nil {
-		return err
+		ctx.IsServiceFetched = true
 	}
 
 	v, err := g.View(viewServicesId)
 	if err != nil {
 		if err == gocui.ErrUnknownView {
-			return layoutServicesInit(g, cluster, cluster.Services[0])
+			return layoutServicesList(g, cluster.Services)
 		}
 
 		return err
@@ -107,4 +99,26 @@ func layoutServices(g *gocui.Gui, cluster *ClusterData) error {
 	}
 
 	return nil
+}
+
+func showServiceDetails(g *gocui.Gui, v *gocui.View) error {
+	ctx := _ctx.Context()
+
+	_, cy := v.Cursor()
+	l, err := v.Line(cy)
+	if err != nil {
+		l = ""
+	}
+
+	if l == "" {
+		return errors.New("l: " + l)
+	}
+
+	for _, s := range ctx.ActiveCluster.Services {
+		if s.Name == l {
+			return layoutServiceDetail(g, s)
+		}
+	}
+
+	return errors.New("cluster: " + l + " not found")
 }
