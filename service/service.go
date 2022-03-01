@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -15,6 +16,13 @@ type ServiceData struct {
 	Arn  string
 
 	*types.Service
+}
+
+func (s *ServiceData) Render() []string {
+	return []string{
+		fmt.Sprintf("Status: %s", *s.Status),
+		fmt.Sprintf("Arn: %s", *s.ServiceArn),
+	}
 }
 
 func GetServices(cluster string) ([]string, error) {

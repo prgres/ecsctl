@@ -3,6 +3,7 @@ package main
 import "github.com/jroimartin/gocui"
 
 func keybindings(g *gocui.Gui) error {
+	/* --- GLOBAL --- */
 	if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
 		return err
 	}
@@ -19,15 +20,17 @@ func keybindings(g *gocui.Gui) error {
 		return err
 	}
 
-	if err := g.SetKeybinding(viewClusterId, gocui.MouseLeft, gocui.ModNone, showServicesLayoutMouse); err != nil {
+	/* --- viewClusterListId --- */
+	if err := g.SetKeybinding(viewClusterListId, gocui.MouseLeft, gocui.ModNone, layoutClustersClickMouse); err != nil {
 		return err
 	}
 
-	if err := g.SetKeybinding(viewClusterId, gocui.KeyEnter, gocui.ModNone, showServicesLayout); err != nil {
+	if err := g.SetKeybinding(viewClusterListId, gocui.KeyEnter, gocui.ModNone, layoutClustersClick); err != nil {
 		return err
 	}
 
-	if err := g.SetKeybinding(viewServicesId, gocui.KeyEnter, gocui.ModNone, showServiceDetails); err != nil {
+	/* --- viewServiceListId --- */
+	if err := g.SetKeybinding(viewServiceListId, gocui.KeyEnter, gocui.ModNone, layoutServiceListClick); err != nil {
 		return err
 	}
 
