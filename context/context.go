@@ -7,8 +7,7 @@ import (
 type Context struct {
 	ClustersData []*cluster.ClusterData
 
-	IsServiceFetched bool
-	ActiveCluster    *cluster.ClusterData
+	ActiveCluster *cluster.ClusterData
 }
 
 func New() (*Context, error) {
