@@ -7,8 +7,9 @@ import (
 )
 
 type ClusterData struct {
-	Name             string
-	Services         []*service.ServiceData
+	Name     string
+	Services []*service.ServiceData
+
 	IsServiceFetched bool
 }
 
@@ -17,6 +18,10 @@ var (
 )
 
 func (c *ClusterData) FetchServices() error {
+	if c.IsServiceFetched {
+		return nil
+	}
+
 	if err := c.FetchServicesNameArn(); err != nil {
 		return err
 	}
@@ -24,6 +29,8 @@ func (c *ClusterData) FetchServices() error {
 	if err := c.FetchServicesDetail(); err != nil {
 		return err
 	}
+
+	c.IsServiceFetched = true
 
 	return nil
 }

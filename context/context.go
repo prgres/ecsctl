@@ -2,12 +2,14 @@ package context
 
 import (
 	"github.com/prgres/ecsctl/cluster"
+	"github.com/prgres/ecsctl/service"
 )
 
 type Context struct {
 	ClustersData []*cluster.ClusterData
 
 	ActiveCluster *cluster.ClusterData
+	ActiveService *service.ServiceData
 }
 
 func New() (*Context, error) {
@@ -32,37 +34,20 @@ func (ctx *Context) Cluster(id string) (*cluster.ClusterData, error) {
 	return nil, cluster.ErrClusterNotFound
 }
 
-func (ctx *Context) SetActiveCluster(cluster *cluster.ClusterData) {
+func (ctx *Context) SetActiveCluster(cluster *cluster.ClusterData) *cluster.ClusterData {
 	ctx.ActiveCluster = cluster
+	return ctx.ActiveCluster
 }
 
-func (ctx *Context) SetActiveClusterId(clusterId string) error {
+func (ctx *Context) SetActiveClusterId(clusterId string) (*cluster.ClusterData, error) {
 	cluster, err := ctx.Cluster(clusterId)
-	if err != nil {
-		return err
-	}
-
-	ctx.SetActiveCluster(cluster)
-	return nil
-}
-
-func (ctx *Context) Context() *Context {
-	return ctx
-}
-
-func GetClusters() ([]*cluster.ClusterData, error) {
-	var clustersData []*cluster.ClusterData
-
-	clusters, err := cluster.GetClustersNames()
 	if err != nil {
 		return nil, err
 	}
 
-	for _, c := range clusters {
-		clustersData = append(clustersData, &cluster.ClusterData{
-			Name: c,
-		})
-	}
+	return ctx.SetActiveCluster(cluster), nil
+}
 
-	return clustersData, nil
+func (ctx *Context) Context() *Context {
+	return ctx
 }

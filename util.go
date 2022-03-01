@@ -43,15 +43,15 @@ func back(g *gocui.Gui, v *gocui.View) error {
 	case len(g.Views()) == 0:
 		return quit(g, v)
 
-	case g.CurrentView().Name() == viewClusterId:
+	case g.CurrentView().Name() == viewClusterListId:
 		return quit(g, v)
 
-	case g.CurrentView().Name() == viewServicesId:
+	case g.CurrentView().Name() == viewServiceListId:
 		// omit error because it can only return ErrUnknownView which does not bother us at this moment
-		_ = g.DeleteView(viewServicesId)
+		_ = g.DeleteView(viewServiceListId)
 		_ = g.DeleteView(viewServiceDetailId)
 
-		return layoutClusters(_ctx.Context(), g)
+		return layoutClusterListShow(_ctx.Context(), g)
 
 	default:
 		return nil
