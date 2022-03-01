@@ -30,6 +30,7 @@ func prevLine(g *gocui.Gui, v *gocui.View) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -38,10 +39,21 @@ func quit(g *gocui.Gui, v *gocui.View) error {
 }
 
 func back(g *gocui.Gui, v *gocui.View) error {
-	if len(g.Views()) == 1 && g.Views()[0].Name() == viewClusterId {
+	switch {
+	case len(g.Views()) == 0:
 		return quit(g, v)
-	}
 
-	g.DeleteView(g.Views()[len(g.Views())-1].Name())
-	return nil
+	case g.CurrentView().Name() == viewClusterId:
+		return quit(g, v)
+
+	case g.CurrentView().Name() == viewServicesId:
+		// omit error because it can only return ErrUnknownView which does not bother us at this moment
+		_ = g.DeleteView(viewServicesId)
+		_ = g.DeleteView(viewServiceDetailId)
+
+		return layoutClusters(_ctx.Context(), g)
+
+	default:
+		return nil
+	}
 }

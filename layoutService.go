@@ -85,16 +85,12 @@ func layoutServices(ctx *context.Context, g *gocui.Gui) error {
 		cluster.IsServiceFetched = true
 	}
 
-	v, err := g.View(viewServicesId)
+	_, err := g.SetCurrentView(viewServicesId)
 	if err != nil {
 		if err == gocui.ErrUnknownView {
 			return layoutServicesList(g, cluster.Services)
 		}
 
-		return err
-	}
-
-	if _, err := g.SetCurrentView(v.Name()); err != nil {
 		return err
 	}
 

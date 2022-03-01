@@ -49,7 +49,6 @@ func routes(g *gocui.Gui) error {
 	}
 
 	switch g.CurrentView().Name() {
-
 	case viewClusterId:
 		return layoutClusters(ctx, g)
 

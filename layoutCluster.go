@@ -35,16 +35,12 @@ func layoutClustersInit(g *gocui.Gui, clustersData []*cluster.ClusterData) error
 }
 
 func layoutClusters(ctx *context.Context, g *gocui.Gui) error {
-	v, err := g.View(viewClusterId)
+	_, err := g.SetCurrentView(viewClusterId)
 	if err != nil {
 		if err == gocui.ErrUnknownView {
 			return layoutClustersInit(g, ctx.ClustersData)
 		}
 
-		return err
-	}
-
-	if _, err := g.SetCurrentView(v.Name()); err != nil {
 		return err
 	}
 
