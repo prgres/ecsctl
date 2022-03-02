@@ -21,16 +21,16 @@ func keybindings(g *gocui.Gui) error {
 	}
 
 	/* --- viewClusterListId --- */
-	if err := g.SetKeybinding(viewClusterListId, gocui.MouseLeft, gocui.ModNone, layoutClustersClickMouse); err != nil {
+	if err := g.SetKeybinding(widgetClusterListId, gocui.MouseLeft, gocui.ModNone, widgetClusterListClickMouse); err != nil {
 		return err
 	}
 
-	if err := g.SetKeybinding(viewClusterListId, gocui.KeyEnter, gocui.ModNone, layoutClustersClick); err != nil {
+	if err := g.SetKeybinding(widgetClusterListId, gocui.KeyEnter, gocui.ModNone, widgetClusterListClick); err != nil {
 		return err
 	}
 
 	/* --- viewServiceListId --- */
-	if err := g.SetKeybinding(viewServiceListId, gocui.KeyEnter, gocui.ModNone, layoutServiceListClick); err != nil {
+	if err := g.SetKeybinding(widgetServiceListId, gocui.KeyEnter, gocui.ModNone, widgetServiceListClick); err != nil {
 		return err
 	}
 

@@ -4,9 +4,10 @@ import (
 	"github.com/jroimartin/gocui"
 
 	"github.com/prgres/ecsctl/context"
+	"github.com/prgres/ecsctl/widget"
 )
 
-func layoutClusterListShow(ctx *context.Context, g *gocui.Gui) error {
+func widgetClusterListShow(ctx *context.Context, g *gocui.Gui, widget *widget.Widget) error {
 	clustersName := func() []string {
 		result := make([]string, len(ctx.ClustersData))
 		for i := range ctx.ClustersData {
@@ -16,30 +17,34 @@ func layoutClusterListShow(ctx *context.Context, g *gocui.Gui) error {
 		return result
 	}()
 
-	v, err := layoutClusterList.Render(g, clustersName)
+	widget.UpdateData(clustersName)
+	v, err := widget.Get(g)
 	if err != nil {
 		return nil
 	}
 
 	_, _ = g.SetCurrentView(v.Name())
-
 	return nil
 }
 
 /* --- keybinding func --- */
 var prevLineMouseClick = ""
 
-func layoutClustersClickMouse(g *gocui.Gui, v *gocui.View) error {
+func widgetClusterListClickMouse(g *gocui.Gui, v *gocui.View) error {
 	ctx := _ctx.Context()
 	_, cy := v.Cursor()
 
 	clusterId, err := v.Line(cy)
 	if err != nil {
-		clusterId = ""
+		return nil
 	}
 
 	if prevLineMouseClick == clusterId {
-		return layoutServiceListShow(ctx, g)
+		if _, err := ctx.SetActiveClusterId(clusterId); err != nil {
+			return err
+		}
+
+		return viewServiceListShow(ctx, g)
 	}
 
 	if prevLineMouseClick == "" {
@@ -49,7 +54,7 @@ func layoutClustersClickMouse(g *gocui.Gui, v *gocui.View) error {
 	return nil
 }
 
-func layoutClustersClick(g *gocui.Gui, v *gocui.View) error {
+func widgetClusterListClick(g *gocui.Gui, v *gocui.View) error {
 	ctx := _ctx.Context()
 	_, cy := v.Cursor()
 
@@ -62,7 +67,7 @@ func layoutClustersClick(g *gocui.Gui, v *gocui.View) error {
 		return err
 	}
 
-	if err := layoutServiceListShow(ctx, g); err != nil {
+	if err := viewServiceListShow(ctx, g); err != nil {
 		return err
 	}
 

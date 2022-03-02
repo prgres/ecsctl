@@ -4,38 +4,46 @@ import (
 	"log"
 
 	"github.com/jroimartin/gocui"
+
 	"github.com/prgres/ecsctl/context"
-	"github.com/prgres/ecsctl/layout"
+	"github.com/prgres/ecsctl/view"
+	"github.com/prgres/ecsctl/widget"
 )
 
 const (
-	viewClusterListId   = "clusterListView"
-	viewServiceListId   = "serviceListView"
-	viewServiceDetailId = "serviceDetailView"
+	viewClusterListId = "viewClusterList"
+	viewServiceListId = "viewServiceList"
+
+	widgetClusterListId   = "widgetClusterList"
+	widgetServiceListId   = "widgetServiceList"
+	widgetServiceDetailId = "widgetServiceDetail"
 )
 
 var (
-	layoutClusterList   *layout.Layout
-	layoutServiceList   *layout.Layout
-	layoutServiceDetail *layout.Layout
-
 	_ctx *context.Context
 )
 
-func initLayouts(g *gocui.Gui) {
+func initWidgets(ctx *context.Context, g *gocui.Gui) {
 	maxX, maxY := g.Size()
 
-	layoutClusterList = &layout.Layout{
-		ViewId: viewClusterListId, X1: maxX / 4, X2: maxY / 4, Y1: 3 * maxX / 4, Y2: 3 * maxY / 4,
+	//
+	widgetClusterList := &widget.Widget{
+		Id: widgetClusterListId, X1: maxX / 4, X2: maxY / 4, Y1: 3 * maxX / 4, Y2: 3 * maxY / 4,
+	}
+	viewClusterList := view.New(viewClusterListId, widgetClusterList)
+	ctx.Views = append(ctx.Views, viewClusterList)
+
+	///
+	widgetServiceList := &widget.Widget{
+		Id: widgetServiceListId, X1: 1, X2: 1, Y1: maxX/3 - 1, Y2: maxY - 1,
 	}
 
-	layoutServiceList = &layout.Layout{
-		ViewId: viewServiceListId, X1: 1, X2: 1, Y1: maxX/3 - 1, Y2: maxY - 1,
+	widgetServiceDetail := &widget.Widget{
+		Id: widgetServiceDetailId, X1: 1 * maxX / 3, X2: 1, Y1: maxX - 1, Y2: maxY - 1,
 	}
 
-	layoutServiceDetail = &layout.Layout{
-		ViewId: viewServiceDetailId, X1: 1 * maxX / 3, X2: 1, Y1: maxX - 1, Y2: maxY - 1,
-	}
+	viewServiceList := view.New(viewServiceListId, widgetServiceDetail, widgetServiceList)
+	ctx.Views = append(ctx.Views, viewServiceList)
 }
 
 func main() {
@@ -53,34 +61,51 @@ func main() {
 		log.Panicln(err)
 	}
 
-	g.SetManagerFunc(routes)
+	g.SetManagerFunc(mainLoop)
 
 	if err := keybindings(g); err != nil {
 		log.Panicln(err)
 	}
 
-	initLayouts(g)
+	initWidgets(_ctx, g)
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		log.Panicln(err)
 	}
 }
 
-func routes(g *gocui.Gui) error {
+func mainLoop(g *gocui.Gui) error {
 	ctx := _ctx.Context()
 
-	if g.CurrentView() == nil {
-		return layoutClusterListShow(ctx, g)
+	if err := routes(ctx, g); err != nil {
+		return err
 	}
 
-	switch g.CurrentView().Name() {
+	if err := render(ctx, g); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func routes(ctx *context.Context, g *gocui.Gui) error {
+	if ctx.CurrentView == nil {
+		return viewClusterListShow(ctx, g)
+	}
+
+	// switch g.CurrentView().Name() {
+	switch ctx.CurrentView.Id {
 	case viewClusterListId:
-		return layoutClusterListShow(ctx, g)
+		return viewClusterListShow(ctx, g)
 
 	case viewServiceListId:
-		return layoutServiceListShow(ctx, g)
+		return viewServiceListShow(ctx, g)
 
 	default:
 		return nil
 	}
+}
+
+func render(ctx *context.Context, g *gocui.Gui) error {
+	return ctx.CurrentView.Render(g)
 }

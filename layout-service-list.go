@@ -6,9 +6,10 @@ import (
 	"github.com/jroimartin/gocui"
 
 	"github.com/prgres/ecsctl/context"
+	"github.com/prgres/ecsctl/widget"
 )
 
-func layoutServiceListShow(ctx *context.Context, g *gocui.Gui) error {
+func widgetServiceListShow(ctx *context.Context, g *gocui.Gui, widget *widget.Widget) error {
 	cluster := ctx.ActiveCluster
 
 	if err := cluster.FetchServices(); err != nil {
@@ -24,7 +25,8 @@ func layoutServiceListShow(ctx *context.Context, g *gocui.Gui) error {
 		return result
 	}()
 
-	v, err := layoutServiceList.Render(g, servicesName)
+	widget.UpdateData(servicesName)
+	v, err := widget.Get(g)
 	if err != nil {
 		return err
 	}
@@ -35,7 +37,7 @@ func layoutServiceListShow(ctx *context.Context, g *gocui.Gui) error {
 }
 
 /* --- keybinding func --- */
-func layoutServiceListClick(g *gocui.Gui, v *gocui.View) error {
+func widgetServiceListClick(g *gocui.Gui, v *gocui.View) error {
 	ctx := _ctx.Context()
 	_, cy := v.Cursor()
 
@@ -44,12 +46,17 @@ func layoutServiceListClick(g *gocui.Gui, v *gocui.View) error {
 		return errors.New("service: " + serviceId) //TODO
 	}
 
-	for _, s := range ctx.ActiveCluster.Services {
-		if s.Name == serviceId {
-			_, err := layoutServiceDetail.Render(g, s.Render())
-			return err
-		}
+	service, err := ctx.ActiveCluster.Service(serviceId)
+	if err != nil {
+		return err
 	}
 
-	return errors.New("service: " + serviceId + " not found")
+	widget, err := ctx.CurrentView.Widget(widgetServiceDetailId)
+	if err != nil {
+		return err
+	}
+
+	widget.UpdateData(service.Render())
+
+	return nil
 }

@@ -3,14 +3,16 @@ package main
 import (
 	"github.com/jroimartin/gocui"
 	"github.com/prgres/ecsctl/context"
+	"github.com/prgres/ecsctl/widget"
 )
 
-func layoutServiceDetailsShow(ctx *context.Context, g *gocui.Gui) error {
+func widgetServiceDetailsShow(ctx *context.Context, g *gocui.Gui, widget *widget.Widget) error {
 	service := ctx.ActiveService
-	_, err := layoutServiceDetail.Render(g, service.Render())
-	if err != nil {
-		return err
+	if service == nil {
+		return nil
 	}
+
+	widget.UpdateData(service.Render())
 
 	return nil
 }
