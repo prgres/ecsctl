@@ -20,8 +20,7 @@ const (
 )
 
 var (
-	_ctx  *context.Context
-	views []*view.View
+	_ctx *context.Context
 )
 
 func initWidgets(ctx *context.Context, g *gocui.Gui) {
@@ -32,7 +31,7 @@ func initWidgets(ctx *context.Context, g *gocui.Gui) {
 		Id: widgetClusterListId, X1: maxX / 4, X2: maxY / 4, Y1: 3 * maxX / 4, Y2: 3 * maxY / 4,
 	}
 	viewClusterList := view.New(viewClusterListId, widgetClusterList)
-	views = append(views, viewClusterList)
+	ctx.Views = append(ctx.Views, viewClusterList)
 
 	///
 	widgetServiceList := &widget.Widget{
@@ -44,9 +43,7 @@ func initWidgets(ctx *context.Context, g *gocui.Gui) {
 	}
 
 	viewServiceList := view.New(viewServiceListId, widgetServiceDetail, widgetServiceList)
-	views = append(views, viewServiceList)
-
-	ctx.Views = views
+	ctx.Views = append(ctx.Views, viewServiceList)
 }
 
 func main() {
