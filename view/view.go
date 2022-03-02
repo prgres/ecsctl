@@ -37,5 +37,5 @@ func (v *View) Widget(id string) (*widget.Widget, error) {
 		}
 	}
 
-	return nil, errors.New("widget " + id + " not found")
+	return nil, errors.New("widget: " + id + " not found")
 }

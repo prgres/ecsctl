@@ -7,7 +7,12 @@ import (
 )
 
 func viewServiceListShow(ctx *context.Context, g *gocui.Gui) error {
-	w, err := viewServiceList.Widget(widgetServiceListId)
+	view, err := ctx.SetCurrentView(viewServiceListId)
+	if err != nil {
+		return err
+	}
+
+	w, err := view.Widget(widgetServiceListId)
 	if err != nil {
 		return err
 	}
@@ -16,7 +21,7 @@ func viewServiceListShow(ctx *context.Context, g *gocui.Gui) error {
 		return err
 	}
 
-	w, err = viewServiceList.Widget(widgetServiceDetailId)
+	w, err = view.Widget(widgetServiceDetailId)
 	if err != nil {
 		return err
 	}
@@ -24,8 +29,6 @@ func viewServiceListShow(ctx *context.Context, g *gocui.Gui) error {
 	if err := widgetServiceDetailsShow(ctx, g, w); err != nil {
 		return err
 	}
-
-	ctx.CurrentView = viewServiceList
 
 	return nil
 }

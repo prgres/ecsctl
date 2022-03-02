@@ -7,7 +7,12 @@ import (
 )
 
 func viewClusterListShow(ctx *context.Context, g *gocui.Gui) error {
-	w, err := viewClusterList.Widget(widgetClusterListId)
+	view, err := ctx.SetCurrentView(viewClusterListId)
+	if err != nil {
+		return err
+	}
+
+	w, err := view.Widget(widgetClusterListId)
 	if err != nil {
 		return err
 	}
@@ -15,8 +20,6 @@ func viewClusterListShow(ctx *context.Context, g *gocui.Gui) error {
 	if err := widgetClusterListShow(ctx, g, w); err != nil {
 		return err
 	}
-
-	ctx.CurrentView = viewClusterList
 
 	return nil
 }

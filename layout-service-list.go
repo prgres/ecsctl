@@ -51,7 +51,7 @@ func widgetServiceListClick(g *gocui.Gui, v *gocui.View) error {
 		return err
 	}
 
-	widget, err := viewServiceList.Widget(widgetServiceDetailId)
+	widget, err := ctx.CurrentView.Widget(widgetServiceDetailId)
 	if err != nil {
 		return err
 	}

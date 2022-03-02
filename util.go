@@ -50,7 +50,11 @@ func back(g *gocui.Gui, v *gocui.View) error {
 		return quit(g, v)
 
 	case viewServiceListId:
-		ctx.CurrentView = viewClusterList
+		_, err := ctx.SetCurrentView(viewClusterListId)
+		if err != nil {
+			return err
+		}
+
 		return viewServiceListClear(ctx, g)
 
 	default:
