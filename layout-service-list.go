@@ -8,7 +8,7 @@ import (
 	"github.com/prgres/ecsctl/context"
 )
 
-func layoutServiceListShow(ctx *context.Context, g *gocui.Gui) error {
+func widgetServiceListShow(ctx *context.Context, g *gocui.Gui) error {
 	cluster := ctx.ActiveCluster
 
 	if err := cluster.FetchServices(); err != nil {
@@ -24,7 +24,8 @@ func layoutServiceListShow(ctx *context.Context, g *gocui.Gui) error {
 		return result
 	}()
 
-	v, err := layoutServiceList.Render(g, servicesName)
+	widgetServiceList.UpdateData(servicesName)
+	v, err := widgetServiceList.Get(g)
 	if err != nil {
 		return err
 	}
@@ -35,7 +36,7 @@ func layoutServiceListShow(ctx *context.Context, g *gocui.Gui) error {
 }
 
 /* --- keybinding func --- */
-func layoutServiceListClick(g *gocui.Gui, v *gocui.View) error {
+func widgetServiceListClick(g *gocui.Gui, v *gocui.View) error {
 	ctx := _ctx.Context()
 	_, cy := v.Cursor()
 
@@ -46,8 +47,8 @@ func layoutServiceListClick(g *gocui.Gui, v *gocui.View) error {
 
 	for _, s := range ctx.ActiveCluster.Services {
 		if s.Name == serviceId {
-			_, err := layoutServiceDetail.Render(g, s.Render())
-			return err
+			widgetServiceDetail.UpdateData(s.Render())
+			return nil
 		}
 	}
 

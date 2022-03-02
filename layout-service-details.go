@@ -5,12 +5,13 @@ import (
 	"github.com/prgres/ecsctl/context"
 )
 
-func layoutServiceDetailsShow(ctx *context.Context, g *gocui.Gui) error {
+func widgetServiceDetailsShow(ctx *context.Context, g *gocui.Gui) error {
 	service := ctx.ActiveService
-	_, err := layoutServiceDetail.Render(g, service.Render())
-	if err != nil {
-		return err
+	if service == nil {
+		return nil
 	}
+
+	widgetServiceDetail.UpdateData(service.Render())
 
 	return nil
 }

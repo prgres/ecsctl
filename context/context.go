@@ -3,6 +3,7 @@ package context
 import (
 	"github.com/prgres/ecsctl/cluster"
 	"github.com/prgres/ecsctl/service"
+	"github.com/prgres/ecsctl/view"
 )
 
 type Context struct {
@@ -10,6 +11,8 @@ type Context struct {
 
 	ActiveCluster *cluster.ClusterData
 	ActiveService *service.ServiceData
+
+	CurrentView *view.View
 }
 
 func New() (*Context, error) {
