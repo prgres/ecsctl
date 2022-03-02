@@ -28,6 +28,25 @@ func (w *Widget) Get(g *gocui.Gui) (*gocui.View, error) {
 	return v, nil
 }
 
+func (w *Widget) Render(g *gocui.Gui) error {
+	v, err := w.Get(g)
+	if err != nil {
+		return err
+	}
+
+	v.Clear()
+
+	for i := range w.Data {
+		fmt.Fprintln(v, w.Data[i])
+	}
+
+	return nil
+}
+
+func (w *Widget) UpdateData(data []string) {
+	w.Data = data
+}
+
 func (w *Widget) init(g *gocui.Gui) (*gocui.View, error) {
 	v, err := g.SetView(w.Id, w.X1, w.X2, w.Y1, w.Y2)
 	if err != nil && err != gocui.ErrUnknownView {
@@ -41,26 +60,4 @@ func (w *Widget) init(g *gocui.Gui) (*gocui.View, error) {
 	v.SelFgColor = gocui.ColorBlack
 
 	return v, nil
-}
-
-func (w *Widget) Render(g *gocui.Gui) error {
-	// func (w *Widget) Render(g *gocui.Gui) (*gocui.View, error) {
-	v, err := w.Get(g)
-	if err != nil {
-		return err
-		// return nil, err
-	}
-
-	v.Clear()
-
-	for i := range w.Data {
-		fmt.Fprintln(v, w.Data[i])
-	}
-
-	// return v, nil
-	return nil
-}
-
-func (w *Widget) UpdateData(data []string) {
-	w.Data = data
 }

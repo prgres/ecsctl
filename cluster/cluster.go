@@ -82,3 +82,13 @@ func (c *ClusterData) ServicesArn() []string {
 
 	return result
 }
+
+func (c *ClusterData) Service(id string) (*service.ServiceData, error) {
+	for i := range c.Services {
+		if id == c.Services[i].Name {
+			return c.Services[i], nil
+		}
+	}
+
+	return nil, errors.New("service " + id + " not found")
+}

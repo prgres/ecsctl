@@ -4,9 +4,10 @@ import (
 	"github.com/jroimartin/gocui"
 
 	"github.com/prgres/ecsctl/context"
+	"github.com/prgres/ecsctl/widget"
 )
 
-func widgetClusterListShow(ctx *context.Context, g *gocui.Gui) error {
+func widgetClusterListShow(ctx *context.Context, g *gocui.Gui, widget *widget.Widget) error {
 	clustersName := func() []string {
 		result := make([]string, len(ctx.ClustersData))
 		for i := range ctx.ClustersData {
@@ -16,8 +17,8 @@ func widgetClusterListShow(ctx *context.Context, g *gocui.Gui) error {
 		return result
 	}()
 
-	widgetClusterList.UpdateData(clustersName)
-	v, err := widgetClusterList.Get(g)
+	widget.UpdateData(clustersName)
+	v, err := widget.Get(g)
 	if err != nil {
 		return nil
 	}

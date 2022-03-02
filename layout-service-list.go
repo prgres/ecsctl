@@ -6,9 +6,10 @@ import (
 	"github.com/jroimartin/gocui"
 
 	"github.com/prgres/ecsctl/context"
+	"github.com/prgres/ecsctl/widget"
 )
 
-func widgetServiceListShow(ctx *context.Context, g *gocui.Gui) error {
+func widgetServiceListShow(ctx *context.Context, g *gocui.Gui, widget *widget.Widget) error {
 	cluster := ctx.ActiveCluster
 
 	if err := cluster.FetchServices(); err != nil {
@@ -24,8 +25,8 @@ func widgetServiceListShow(ctx *context.Context, g *gocui.Gui) error {
 		return result
 	}()
 
-	widgetServiceList.UpdateData(servicesName)
-	v, err := widgetServiceList.Get(g)
+	widget.UpdateData(servicesName)
+	v, err := widget.Get(g)
 	if err != nil {
 		return err
 	}
@@ -45,12 +46,17 @@ func widgetServiceListClick(g *gocui.Gui, v *gocui.View) error {
 		return errors.New("service: " + serviceId) //TODO
 	}
 
-	for _, s := range ctx.ActiveCluster.Services {
-		if s.Name == serviceId {
-			widgetServiceDetail.UpdateData(s.Render())
-			return nil
-		}
+	service, err := ctx.ActiveCluster.Service(serviceId)
+	if err != nil {
+		return err
 	}
 
-	return errors.New("service: " + serviceId + " not found")
+	widget, err := viewServiceList.Widget(widgetServiceDetailId)
+	if err != nil {
+		return err
+	}
+
+	widget.UpdateData(service.Render())
+
+	return nil
 }

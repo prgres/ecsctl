@@ -7,11 +7,21 @@ import (
 )
 
 func viewServiceListShow(ctx *context.Context, g *gocui.Gui) error {
-	if err := widgetServiceListShow(ctx, g); err != nil {
+	w, err := viewServiceList.Widget(widgetServiceListId)
+	if err != nil {
 		return err
 	}
 
-	if err := widgetServiceDetailsShow(ctx, g); err != nil {
+	if err := widgetServiceListShow(ctx, g, w); err != nil {
+		return err
+	}
+
+	w, err = viewServiceList.Widget(widgetServiceDetailId)
+	if err != nil {
+		return err
+	}
+
+	if err := widgetServiceDetailsShow(ctx, g, w); err != nil {
 		return err
 	}
 

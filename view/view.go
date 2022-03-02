@@ -1,7 +1,10 @@
 package view
 
 import (
+	"errors"
+
 	"github.com/jroimartin/gocui"
+
 	"github.com/prgres/ecsctl/widget"
 )
 
@@ -25,4 +28,14 @@ func (v *View) Render(g *gocui.Gui) error {
 	}
 
 	return nil
+}
+
+func (v *View) Widget(id string) (*widget.Widget, error) {
+	for i := range v.Widgets {
+		if id == v.Widgets[i].Id {
+			return v.Widgets[i], nil
+		}
+	}
+
+	return nil, errors.New("widget " + id + " not found")
 }

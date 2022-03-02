@@ -23,30 +23,30 @@ var (
 	_ctx  *context.Context
 	views []*view.View
 
-	viewClusterList   *view.View
-	widgetClusterList *widget.Widget
+	viewClusterList *view.View
+	// widgetClusterList *widget.Widget
 
-	viewServiceList     *view.View
-	widgetServiceList   *widget.Widget
-	widgetServiceDetail *widget.Widget
+	viewServiceList *view.View
+	// widgetServiceList   *widget.Widget
+	// widgetServiceDetail *widget.Widget
 )
 
 func initWidgets(g *gocui.Gui) {
 	maxX, maxY := g.Size()
 
 	//
-	widgetClusterList = &widget.Widget{
+	widgetClusterList := &widget.Widget{
 		Id: widgetClusterListId, X1: maxX / 4, X2: maxY / 4, Y1: 3 * maxX / 4, Y2: 3 * maxY / 4,
 	}
 	viewClusterList = view.New(viewClusterListId, widgetClusterList)
 	views = append(views, viewClusterList)
 
 	///
-	widgetServiceList = &widget.Widget{
+	widgetServiceList := &widget.Widget{
 		Id: widgetServiceListId, X1: 1, X2: 1, Y1: maxX/3 - 1, Y2: maxY - 1,
 	}
 
-	widgetServiceDetail = &widget.Widget{
+	widgetServiceDetail := &widget.Widget{
 		Id: widgetServiceDetailId, X1: 1 * maxX / 3, X2: 1, Y1: maxX - 1, Y2: maxY - 1,
 	}
 
