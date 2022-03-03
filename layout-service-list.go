@@ -4,37 +4,34 @@ import (
 	"errors"
 
 	"github.com/jroimartin/gocui"
-
-	"github.com/prgres/ecsctl/context"
-	"github.com/prgres/ecsctl/widget"
 )
 
-func widgetServiceListShow(ctx *context.Context, g *gocui.Gui, widget *widget.Widget) error {
-	cluster := ctx.ActiveCluster
+// func widgetServiceListShow(ctx *gui.Context, g *gocui.Gui, widget *gui.Widget) error {
+// 	cluster := ctx.ActiveCluster
 
-	if err := cluster.FetchServices(); err != nil {
-		return err
-	}
+// 	if err := cluster.FetchServices(); err != nil {
+// 		return err
+// 	}
 
-	servicesName := func() []string {
-		result := make([]string, len(cluster.Services))
-		for i := range cluster.Services {
-			result[i] = cluster.Services[i].Name
-		}
+// 	servicesName := func() []string {
+// 		result := make([]string, len(cluster.Services))
+// 		for i := range cluster.Services {
+// 			result[i] = cluster.Services[i].Name
+// 		}
 
-		return result
-	}()
+// 		return result
+// 	}()
 
-	widget.UpdateData(servicesName)
-	v, err := widget.Get(g)
-	if err != nil {
-		return err
-	}
+// 	widget.UpdateData(servicesName)
+// 	v, err := widget.Get(g)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	_, err = g.SetCurrentView(v.Name())
+// 	_, err = g.SetCurrentView(v.Name())
 
-	return err
-}
+// 	return err
+// }
 
 /* --- keybinding func --- */
 func widgetServiceListClick(g *gocui.Gui, v *gocui.View) error {

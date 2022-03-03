@@ -1,22 +1,24 @@
-package view
+package gui
 
 import (
 	"errors"
 
 	"github.com/jroimartin/gocui"
-
-	"github.com/prgres/ecsctl/widget"
 )
+
+type ShowFuncType func(ctx *Context, g *gocui.Gui) error
 
 type View struct {
 	Id      string
-	Widgets []*widget.Widget
+	Widgets []*Widget
+	Show    ShowFuncType
 }
 
-func New(id string, widgets ...*widget.Widget) *View {
+func NewView(id string, showFunc ShowFuncType, widgets ...*Widget) *View {
 	return &View{
 		Id:      id,
 		Widgets: widgets,
+		Show:    showFunc,
 	}
 }
 
@@ -30,7 +32,7 @@ func (v *View) Render(g *gocui.Gui) error {
 	return nil
 }
 
-func (v *View) Widget(id string) (*widget.Widget, error) {
+func (v *View) Widget(id string) (*Widget, error) {
 	for i := range v.Widgets {
 		if id == v.Widgets[i].Id {
 			return v.Widgets[i], nil

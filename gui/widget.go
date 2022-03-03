@@ -1,4 +1,4 @@
-package widget
+package gui
 
 import (
 	"fmt"
@@ -6,13 +6,29 @@ import (
 	"github.com/jroimartin/gocui"
 )
 
+type WidgetUpdateFuncType func(ctx *Context, g *gocui.Gui, widget *Widget) error
+
 type Widget struct {
 	Id string
 
 	X1, X2 int
 	Y1, Y2 int
 
-	Data []string
+	Data       []string
+	updateFunc WidgetUpdateFuncType
+}
+
+func NewWidget(id string, updateFunc WidgetUpdateFuncType, X1, X2, Y1, Y2 int) *Widget {
+	return &Widget{
+		Id: id,
+		X1: X1, X2: X2,
+		Y1: Y1, Y2: Y2,
+		updateFunc: updateFunc,
+	}
+}
+
+func (w *Widget) Update(ctx *Context, g *gocui.Gui) error {
+	return w.updateFunc(ctx, g, w)
 }
 
 func (w *Widget) Get(g *gocui.Gui) (*gocui.View, error) {
