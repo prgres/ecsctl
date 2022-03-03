@@ -22,8 +22,12 @@ func NewView(id string, showFunc ShowFuncType, widgets ...*Widget) *View {
 	}
 }
 
-func (v *View) Render(g *gocui.Gui) error {
+func (v *View) Render(ctx *Context, g *gocui.Gui) error {
 	for i := range v.Widgets {
+		if err := v.Widgets[i].Update(ctx, g); err != nil {
+			return err
+		}
+
 		if err := v.Widgets[i].Render(g); err != nil {
 			return err
 		}
