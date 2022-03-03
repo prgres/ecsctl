@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+
 	"github.com/jroimartin/gocui"
 
 	"github.com/prgres/ecsctl/gui"
@@ -85,6 +87,31 @@ func viewServiceListClear(ctx *gui.Context, g *gocui.Gui) error {
 	// omit error because it can only return ErrUnknownView which does not bother us at this moment
 	_ = g.DeleteView(gui.WidgetServiceListId)
 	_ = g.DeleteView(gui.WidgetServiceDetailId)
+
+	return nil
+}
+
+/* --- keybinding func --- */
+func widgetServiceListClick(g *gocui.Gui, v *gocui.View) error {
+	ctx := _ctx.Context()
+	_, cy := v.Cursor()
+
+	serviceId, err := v.Line(cy)
+	if err != nil {
+		return errors.New("service: " + serviceId) //TODO
+	}
+
+	service, err := ctx.ActiveCluster.Service(serviceId)
+	if err != nil {
+		return err
+	}
+
+	widget, err := ctx.CurrentView.Widget(gui.WidgetServiceDetailId)
+	if err != nil {
+		return err
+	}
+
+	widget.UpdateData(service.Render())
 
 	return nil
 }
