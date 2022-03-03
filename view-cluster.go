@@ -8,7 +8,7 @@ import (
 func viewClusterList(g *gocui.Gui) *gui.View {
 	maxX, maxY := g.Size()
 
-	widgetClusterList := gui.NewWidget(widgetClusterListId, func(ctx *gui.Context, g *gocui.Gui, widget *gui.Widget) error {
+	widgetClusterList := gui.NewWidget(gui.WidgetClusterListId, func(ctx *gui.Context, g *gocui.Gui, widget *gui.Widget) error {
 		clustersName := func() []string {
 			result := make([]string, len(ctx.ClustersData))
 			for i := range ctx.ClustersData {
@@ -28,13 +28,13 @@ func viewClusterList(g *gocui.Gui) *gui.View {
 		return nil
 	}, maxX/4, maxY/4, 3*maxX/4, 3*maxY/4)
 
-	viewClusterList := gui.NewView(viewClusterListId, func(ctx *gui.Context, g *gocui.Gui) error {
-		view, err := ctx.SetCurrentView(viewClusterListId)
+	viewClusterList := gui.NewView(gui.ViewClusterListId, func(ctx *gui.Context, g *gocui.Gui) error {
+		view, err := ctx.SetCurrentView(gui.ViewClusterListId)
 		if err != nil {
 			return err
 		}
 
-		w, err := view.Widget(widgetClusterListId)
+		w, err := view.Widget(gui.WidgetClusterListId)
 		if err != nil {
 			return err
 		}

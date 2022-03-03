@@ -1,6 +1,9 @@
 package main
 
-import "github.com/jroimartin/gocui"
+import (
+	"github.com/jroimartin/gocui"
+	"github.com/prgres/ecsctl/gui"
+)
 
 func keybindings(g *gocui.Gui) error {
 	/* --- GLOBAL --- */
@@ -21,16 +24,16 @@ func keybindings(g *gocui.Gui) error {
 	}
 
 	/* --- viewClusterListId --- */
-	if err := g.SetKeybinding(widgetClusterListId, gocui.MouseLeft, gocui.ModNone, widgetClusterListClickMouse); err != nil {
+	if err := g.SetKeybinding(gui.WidgetClusterListId, gocui.MouseLeft, gocui.ModNone, widgetClusterListClickMouse); err != nil {
 		return err
 	}
 
-	if err := g.SetKeybinding(widgetClusterListId, gocui.KeyEnter, gocui.ModNone, widgetClusterListClick); err != nil {
+	if err := g.SetKeybinding(gui.WidgetClusterListId, gocui.KeyEnter, gocui.ModNone, widgetClusterListClick); err != nil {
 		return err
 	}
 
 	/* --- viewServiceListId --- */
-	if err := g.SetKeybinding(widgetServiceListId, gocui.KeyEnter, gocui.ModNone, widgetServiceListClick); err != nil {
+	if err := g.SetKeybinding(gui.WidgetServiceListId, gocui.KeyEnter, gocui.ModNone, widgetServiceListClick); err != nil {
 		return err
 	}
 

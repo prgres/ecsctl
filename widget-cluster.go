@@ -2,27 +2,8 @@ package main
 
 import (
 	"github.com/jroimartin/gocui"
+	"github.com/prgres/ecsctl/gui"
 )
-
-// func widgetClusterListShow(ctx *gui.Context, g *gocui.Gui, widget *gui.Widget) error {
-// 	clustersName := func() []string {
-// 		result := make([]string, len(ctx.ClustersData))
-// 		for i := range ctx.ClustersData {
-// 			result[i] = ctx.ClustersData[i].Name
-// 		}
-
-// 		return result
-// 	}()
-
-// 	widget.UpdateData(clustersName)
-// 	v, err := widget.Get(g)
-// 	if err != nil {
-// 		return nil
-// 	}
-
-// 	_, _ = g.SetCurrentView(v.Name())
-// 	return nil
-// }
 
 /* --- keybinding func --- */
 var prevLineMouseClick = ""
@@ -64,7 +45,7 @@ func widgetClusterListClick(g *gocui.Gui, v *gocui.View) error {
 		return err
 	}
 
-	nextView, err := ctx.View(viewServiceListId)
+	nextView, err := ctx.View(gui.ViewServiceListId)
 	if err != nil {
 		return err
 	}

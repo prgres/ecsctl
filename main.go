@@ -8,15 +8,6 @@ import (
 	"github.com/prgres/ecsctl/gui"
 )
 
-const (
-	viewClusterListId = "viewClusterList"
-	viewServiceListId = "viewServiceList"
-
-	widgetClusterListId   = "widgetClusterList"
-	widgetServiceListId   = "widgetServiceList"
-	widgetServiceDetailId = "widgetServiceDetail"
-)
-
 var (
 	_ctx *gui.Context
 )
@@ -75,7 +66,7 @@ func mainLoop(g *gocui.Gui) error {
 
 func routes(ctx *gui.Context, g *gocui.Gui) error {
 	if ctx.CurrentView == nil {
-		_, err := ctx.SetCurrentView(viewClusterListId) // fallback
+		_, err := ctx.SetCurrentView(gui.ViewClusterListId) // fallback
 		return err
 	}
 

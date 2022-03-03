@@ -1,6 +1,9 @@
 package main
 
-import "github.com/jroimartin/gocui"
+import (
+	"github.com/jroimartin/gocui"
+	"github.com/prgres/ecsctl/gui"
+)
 
 func nextLine(g *gocui.Gui, v *gocui.View) error {
 	cx, cy := v.Cursor()
@@ -46,11 +49,11 @@ func back(g *gocui.Gui, v *gocui.View) error {
 	}
 
 	switch ctx.CurrentView.Id {
-	case viewClusterListId:
+	case gui.ViewClusterListId:
 		return quit(g, v)
 
-	case viewServiceListId:
-		_, err := ctx.SetCurrentView(viewClusterListId)
+	case gui.ViewServiceListId:
+		_, err := ctx.SetCurrentView(gui.ViewClusterListId)
 		if err != nil {
 			return err
 		}

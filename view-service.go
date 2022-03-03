@@ -9,7 +9,7 @@ import (
 func viewServiceList(g *gocui.Gui) *gui.View {
 	maxX, maxY := g.Size()
 
-	widgetServiceList := gui.NewWidget(widgetServiceListId, func(ctx *gui.Context, g *gocui.Gui, widget *gui.Widget) error {
+	widgetServiceList := gui.NewWidget(gui.WidgetServiceListId, func(ctx *gui.Context, g *gocui.Gui, widget *gui.Widget) error {
 		cluster := ctx.ActiveCluster
 
 		if err := cluster.FetchServices(); err != nil {
@@ -38,7 +38,7 @@ func viewServiceList(g *gocui.Gui) *gui.View {
 		1, 1, maxX/3-1, maxY-1,
 	)
 
-	widgetServiceDetail := gui.NewWidget(widgetServiceDetailId,
+	widgetServiceDetail := gui.NewWidget(gui.WidgetServiceDetailId,
 		func(ctx *gui.Context, g *gocui.Gui, widget *gui.Widget) error {
 			service := ctx.ActiveService
 			if service == nil {
@@ -51,13 +51,13 @@ func viewServiceList(g *gocui.Gui) *gui.View {
 		}, 1*maxX/3, 1, maxX-1, maxY-1,
 	)
 
-	viewServiceList := gui.NewView(viewServiceListId, func(ctx *gui.Context, g *gocui.Gui) error {
-		view, err := ctx.SetCurrentView(viewServiceListId)
+	viewServiceList := gui.NewView(gui.ViewServiceListId, func(ctx *gui.Context, g *gocui.Gui) error {
+		view, err := ctx.SetCurrentView(gui.ViewServiceListId)
 		if err != nil {
 			return err
 		}
 
-		w, err := view.Widget(widgetServiceListId)
+		w, err := view.Widget(gui.WidgetServiceListId)
 		if err != nil {
 			return err
 		}
@@ -66,7 +66,7 @@ func viewServiceList(g *gocui.Gui) *gui.View {
 			return err
 		}
 
-		w, err = view.Widget(widgetServiceDetailId)
+		w, err = view.Widget(gui.WidgetServiceDetailId)
 		if err != nil {
 			return err
 		}
@@ -83,8 +83,8 @@ func viewServiceList(g *gocui.Gui) *gui.View {
 
 func viewServiceListClear(ctx *gui.Context, g *gocui.Gui) error {
 	// omit error because it can only return ErrUnknownView which does not bother us at this moment
-	_ = g.DeleteView(widgetServiceListId)
-	_ = g.DeleteView(widgetServiceDetailId)
+	_ = g.DeleteView(gui.WidgetServiceListId)
+	_ = g.DeleteView(gui.WidgetServiceDetailId)
 
 	return nil
 }
