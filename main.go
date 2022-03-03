@@ -74,5 +74,5 @@ func routes(ctx *gui.Context, g *gocui.Gui) error {
 }
 
 func render(ctx *gui.Context, g *gocui.Gui) error {
-	return ctx.CurrentView.Render(g)
+	return ctx.CurrentView.Render(ctx, g)
 }

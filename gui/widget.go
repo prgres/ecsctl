@@ -14,6 +14,7 @@ type Widget struct {
 	X1, X2 int
 	Y1, Y2 int
 
+	View       *gocui.View //TODO:
 	Data       []string
 	updateFunc WidgetUpdateFuncType
 }
@@ -64,7 +65,7 @@ func (w *Widget) UpdateData(data []string) {
 }
 
 func (w *Widget) init(g *gocui.Gui) (*gocui.View, error) {
-	v, err := g.SetView(w.Id, w.X1, w.X2, w.Y1, w.Y2)
+	v, err := g.SetView(w.Id, w.X1, w.Y1, w.X2, w.Y2)
 	if err != nil && err != gocui.ErrUnknownView {
 		return nil, err
 	}

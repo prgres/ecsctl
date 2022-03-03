@@ -4,7 +4,9 @@ const (
 	ViewClusterListId = "viewClusterList"
 	ViewServiceListId = "viewServiceList"
 
-	WidgetClusterListId   = "widgetClusterList"
+	WidgetClusterListId = "widgetClusterList"
+	WidgetLogoBannerId  = "widgetLogoBanner"
+
 	WidgetServiceListId   = "widgetServiceList"
 	WidgetServiceDetailId = "widgetServiceDetail"
 )

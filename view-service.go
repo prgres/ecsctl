@@ -37,7 +37,7 @@ func viewServiceList(g *gocui.Gui) *gui.View {
 
 		return err
 	},
-		1, 1, maxX/3-1, maxY-1,
+		1, maxX/3-1, 1, maxY-1,
 	)
 
 	widgetServiceDetail := gui.NewWidget(gui.WidgetServiceDetailId,
@@ -50,7 +50,7 @@ func viewServiceList(g *gocui.Gui) *gui.View {
 			widget.UpdateData(service.Render())
 
 			return nil
-		}, 1*maxX/3, 1, maxX-1, maxY-1,
+		}, 1*maxX/3, maxX-1, 1, maxY-1,
 	)
 
 	viewServiceList := gui.NewView(gui.ViewServiceListId, func(ctx *gui.Context, g *gocui.Gui) error {
