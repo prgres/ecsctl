@@ -1,11 +1,10 @@
-package context
+package gui
 
 import (
 	"errors"
 
 	"github.com/prgres/ecsctl/cluster"
 	"github.com/prgres/ecsctl/service"
-	"github.com/prgres/ecsctl/view"
 )
 
 type Context struct {
@@ -14,13 +13,12 @@ type Context struct {
 	ActiveCluster *cluster.ClusterData
 	ActiveService *service.ServiceData
 
-	Views       []*view.View
-	CurrentView *view.View
-	// CurrentWidget *widget.Widget //TODO:
+	Views       []*View
+	CurrentView *View
 }
 
-func New() (*Context, error) {
-	clustersData, err := GetClusters()
+func NewContext() (*Context, error) {
+	clustersData, err := cluster.GetClusters()
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +57,7 @@ func (ctx *Context) Context() *Context {
 	return ctx
 }
 
-func (ctx *Context) View(id string) (*view.View, error) {
+func (ctx *Context) View(id string) (*View, error) {
 	for i := range ctx.Views {
 		if id == ctx.Views[i].Id {
 			return ctx.Views[i], nil
@@ -69,7 +67,7 @@ func (ctx *Context) View(id string) (*view.View, error) {
 	return nil, errors.New("view: " + id + " not found")
 }
 
-func (ctx *Context) SetCurrentView(id string) (*view.View, error) {
+func (ctx *Context) SetCurrentView(id string) (*View, error) {
 	view, err := ctx.View(id)
 	if err != nil {
 		return nil, err

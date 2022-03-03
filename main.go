@@ -5,44 +5,20 @@ import (
 
 	"github.com/jroimartin/gocui"
 
-	"github.com/prgres/ecsctl/context"
-	"github.com/prgres/ecsctl/view"
-	"github.com/prgres/ecsctl/widget"
-)
-
-const (
-	viewClusterListId = "viewClusterList"
-	viewServiceListId = "viewServiceList"
-
-	widgetClusterListId   = "widgetClusterList"
-	widgetServiceListId   = "widgetServiceList"
-	widgetServiceDetailId = "widgetServiceDetail"
+	"github.com/prgres/ecsctl/gui"
 )
 
 var (
-	_ctx *context.Context
+	_ctx *gui.Context
 )
 
-func initWidgets(ctx *context.Context, g *gocui.Gui) {
-	maxX, maxY := g.Size()
-
+func initWidgets(ctx *gui.Context, g *gocui.Gui) {
 	//
-	widgetClusterList := &widget.Widget{
-		Id: widgetClusterListId, X1: maxX / 4, X2: maxY / 4, Y1: 3 * maxX / 4, Y2: 3 * maxY / 4,
-	}
-	viewClusterList := view.New(viewClusterListId, widgetClusterList)
+	viewClusterList := viewClusterList(g)
 	ctx.Views = append(ctx.Views, viewClusterList)
 
-	///
-	widgetServiceList := &widget.Widget{
-		Id: widgetServiceListId, X1: 1, X2: 1, Y1: maxX/3 - 1, Y2: maxY - 1,
-	}
-
-	widgetServiceDetail := &widget.Widget{
-		Id: widgetServiceDetailId, X1: 1 * maxX / 3, X2: 1, Y1: maxX - 1, Y2: maxY - 1,
-	}
-
-	viewServiceList := view.New(viewServiceListId, widgetServiceDetail, widgetServiceList)
+	//
+	viewServiceList := viewServiceList(g)
 	ctx.Views = append(ctx.Views, viewServiceList)
 }
 
@@ -56,7 +32,7 @@ func main() {
 	g.Cursor = true
 	g.Mouse = true
 
-	_ctx, err = context.New()
+	_ctx, err = gui.NewContext()
 	if err != nil {
 		log.Panicln(err)
 	}
@@ -88,24 +64,15 @@ func mainLoop(g *gocui.Gui) error {
 	return nil
 }
 
-func routes(ctx *context.Context, g *gocui.Gui) error {
+func routes(ctx *gui.Context, g *gocui.Gui) error {
 	if ctx.CurrentView == nil {
-		return viewClusterListShow(ctx, g)
+		_, err := ctx.SetCurrentView(gui.ViewClusterListId) // fallback
+		return err
 	}
 
-	// switch g.CurrentView().Name() {
-	switch ctx.CurrentView.Id {
-	case viewClusterListId:
-		return viewClusterListShow(ctx, g)
-
-	case viewServiceListId:
-		return viewServiceListShow(ctx, g)
-
-	default:
-		return nil
-	}
+	return ctx.CurrentView.Show(ctx, g)
 }
 
-func render(ctx *context.Context, g *gocui.Gui) error {
+func render(ctx *gui.Context, g *gocui.Gui) error {
 	return ctx.CurrentView.Render(g)
 }

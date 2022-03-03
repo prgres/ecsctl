@@ -8,7 +8,42 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
 )
 
-func GetClusters() ([]string, error) {
+func GetClusters() ([]*ClusterData, error) {
+	var clustersData []*ClusterData
+
+	clusters, err := getClustersNames()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, c := range clusters {
+		clustersData = append(clustersData, &ClusterData{
+			Name: c,
+		})
+	}
+
+	return clustersData, nil
+}
+
+func getClustersNames() ([]string, error) {
+	clusters, err := awsGetClusters()
+	if err != nil {
+		return nil, err
+	}
+
+	for i, cluster := range clusters {
+		clusters[i] = parseClusterArn(cluster)
+	}
+
+	return clusters, nil
+}
+
+func parseClusterArn(arn string) string {
+	re := regexp.MustCompile(`arn:.*:cluster/`)
+	return re.ReplaceAllString(arn, "")
+}
+
+func awsGetClusters() ([]string, error) {
 	var nextToken *string
 	var clustersArn []string
 
@@ -36,22 +71,4 @@ func GetClusters() ([]string, error) {
 	}
 
 	return clustersArn, nil
-}
-
-func ParseClusterArn(arn string) string {
-	re := regexp.MustCompile(`arn:.*:cluster/`)
-	return re.ReplaceAllString(arn, "")
-}
-
-func GetClustersNames() ([]string, error) {
-	clusters, err := GetClusters()
-	if err != nil {
-		return nil, err
-	}
-
-	for i, cluster := range clusters {
-		clusters[i] = ParseClusterArn(cluster)
-	}
-
-	return clusters, nil
 }
