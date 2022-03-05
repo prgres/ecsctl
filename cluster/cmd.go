@@ -4,14 +4,14 @@ import (
 	"context"
 	"regexp"
 
-	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
 )
 
-func GetClusters() ([]*ClusterData, error) {
+func GetClusters(ctx *context.Context, cfg *aws.Config) ([]*ClusterData, error) {
 	var clustersData []*ClusterData
 
-	clusters, err := getClustersNames()
+	clusters, err := getClustersNames(ctx, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -25,8 +25,8 @@ func GetClusters() ([]*ClusterData, error) {
 	return clustersData, nil
 }
 
-func getClustersNames() ([]string, error) {
-	clusters, err := awsGetClusters()
+func getClustersNames(ctx *context.Context, cfg *aws.Config) ([]string, error) {
+	clusters, err := awsGetClusters(ctx, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -43,20 +43,14 @@ func parseClusterArn(arn string) string {
 	return re.ReplaceAllString(arn, "")
 }
 
-func awsGetClusters() ([]string, error) {
+func awsGetClusters(ctx *context.Context, cfg *aws.Config) ([]string, error) {
 	var nextToken *string
 	var clustersArn []string
 
-	ctx := context.TODO()
-	cfg, err := config.LoadDefaultConfig(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	svc := ecs.NewFromConfig(cfg)
+	svc := ecs.NewFromConfig(*cfg)
 
 	for {
-		output, err := svc.ListClusters(ctx, &ecs.ListClustersInput{
+		output, err := svc.ListClusters(*ctx, &ecs.ListClustersInput{
 			NextToken: nextToken,
 		})
 		if err != nil {
