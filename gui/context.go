@@ -1,13 +1,18 @@
 package gui
 
 import (
+	"context"
 	"errors"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/prgres/ecsctl/cluster"
 	"github.com/prgres/ecsctl/service"
 )
 
 type Context struct {
+	Ctx          *context.Context
+	AwsCfg       *aws.Config
 	ClustersData []*cluster.ClusterData
 
 	ActiveCluster *cluster.ClusterData
@@ -18,15 +23,16 @@ type Context struct {
 }
 
 func NewContext() (*Context, error) {
-	clustersData, err := cluster.GetClusters()
+	ctx := context.TODO()
+	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Context{
-		ClustersData: clustersData,
+		Ctx:    &ctx,
+		AwsCfg: &cfg,
 	}, nil
-
 }
 
 func (ctx *Context) Cluster(id string) (*cluster.ClusterData, error) {
